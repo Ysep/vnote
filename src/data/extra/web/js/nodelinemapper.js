@@ -45,6 +45,8 @@ class NodeLineMapper {
     updateHeadingNodes() {
         this.headingNodes = this.container.querySelectorAll("h1, h2, h3, h4, h5, h6");
         let headings = [];
+        let needSectionNumber = window.vxOptions.sectionNumberEnabled;
+        let regExp = Utils.headingSequenceRegExp();
         for (let i = 0; i < this.headingNodes.length; ++i) {
             let node = this.headingNodes[i];
             let headingContent = this.getHeadingContent(node);
@@ -53,7 +55,12 @@ class NodeLineMapper {
                 level: parseInt(node.tagName.substr(1)),
                 anchor: node.id
             });
+            if (needSectionNumber && regExp.test(headingContent)) {
+                needSectionNumber = false;
+            }
         }
+
+        this.adapter.setSectionNumberEnabled(needSectionNumber);
 
         this.adapter.setHeadings(headings);
     }

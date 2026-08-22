@@ -5,6 +5,7 @@
 
 class QCheckBox;
 class QDoubleSpinBox;
+class QSpinBox;
 class QComboBox;
 class QLineEdit;
 
@@ -63,6 +64,12 @@ private:
   QCheckBox *m_codeBlockLineWrapCheckBox = nullptr;
 
   QDoubleSpinBox *m_zoomFactorSpinBox = nullptr;
+
+  QComboBox *m_sectionNumberComboBox = nullptr;
+
+  QSpinBox *m_sectionNumberBaseLevelSpinBox = nullptr;
+
+  QComboBox *m_sectionNumberStyleComboBox = nullptr;
 
   QCheckBox *m_smartTableCheckBox = nullptr;
 

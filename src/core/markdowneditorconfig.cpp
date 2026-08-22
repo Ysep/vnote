@@ -41,6 +41,10 @@ void MarkdownEditorConfig::fromJson(const QJsonObject &p_jobj) {
   m_prependDotInRelativeLink = READBOOL(QStringLiteral("prependDotInRelativeLink"));
   m_confirmBeforeClearObsoleteImages = READBOOL(QStringLiteral("confirmBeforeClearObsoleteImages"));
 
+  m_sectionNumberMode = stringToSectionNumberMode(READSTR(QStringLiteral("sectionNumber")));
+  m_sectionNumberBaseLevel = READINT(QStringLiteral("sectionNumberBaseLevel"));
+  m_sectionNumberStyle = stringToSectionNumberStyle(READSTR(QStringLiteral("sectionNumberStyle")));
+
   m_constrainImageWidthEnabled = READBOOL(QStringLiteral("constrainImageWidth"));
   m_imageAlignCenterEnabled = READBOOL(QStringLiteral("imageAlignCenter"));
   m_constrainInplacePreviewWidthEnabled = READBOOL(QStringLiteral("constrainInplacePreviewWidth"));
@@ -86,6 +90,10 @@ QJsonObject MarkdownEditorConfig::toJson() const {
   obj[QStringLiteral("mathJaxScript")] = m_mathJaxScript;
   obj[QStringLiteral("prependDotInRelativeLink")] = m_prependDotInRelativeLink;
   obj[QStringLiteral("confirmBeforeClearObsoleteImages")] = m_confirmBeforeClearObsoleteImages;
+
+  obj[QStringLiteral("sectionNumber")] = sectionNumberModeToString(m_sectionNumberMode);
+  obj[QStringLiteral("sectionNumberBaseLevel")] = m_sectionNumberBaseLevel;
+  obj[QStringLiteral("sectionNumberStyle")] = sectionNumberStyleToString(m_sectionNumberStyle);
 
   obj[QStringLiteral("constrainImageWidth")] = m_constrainImageWidthEnabled;
   obj[QStringLiteral("imageAlignCenter")] = m_imageAlignCenterEnabled;
@@ -279,6 +287,51 @@ void MarkdownEditorConfig::setCodeBlockLineWrapEnabled(bool p_enabled) {
   updateConfig(m_codeBlockLineWrapEnabled, p_enabled, this);
 }
 
+QString MarkdownEditorConfig::sectionNumberModeToString(SectionNumberMode p_mode) const {
+  switch (p_mode) {
+  case SectionNumberMode::None:
+    return QStringLiteral("none");
+
+  case SectionNumberMode::Edit:
+    return QStringLiteral("edit");
+
+  default:
+    return QStringLiteral("read");
+  }
+}
+
+MarkdownEditorConfig::SectionNumberMode
+MarkdownEditorConfig::stringToSectionNumberMode(const QString &p_str) const {
+  auto mode = p_str.toLower();
+  if (mode == QStringLiteral("none")) {
+    return SectionNumberMode::None;
+  } else if (mode == QStringLiteral("edit")) {
+    return SectionNumberMode::Edit;
+  } else {
+    return SectionNumberMode::Read;
+  }
+}
+
+QString MarkdownEditorConfig::sectionNumberStyleToString(SectionNumberStyle p_style) const {
+  switch (p_style) {
+  case SectionNumberStyle::DigDotDig:
+    return QStringLiteral("digdotdig");
+
+  default:
+    return QStringLiteral("digdotdigdot");
+  }
+}
+
+MarkdownEditorConfig::SectionNumberStyle
+MarkdownEditorConfig::stringToSectionNumberStyle(const QString &p_str) const {
+  auto style = p_str.toLower();
+  if (style == QStringLiteral("digdotdig")) {
+    return SectionNumberStyle::DigDotDig;
+  } else {
+    return SectionNumberStyle::DigDotDigDot;
+  }
+}
+
 QString MarkdownEditorConfig::inplacePreviewSourceToString(InplacePreviewSource p_src) const {
   switch (p_src) {
   case InplacePreviewSource::ImageLink:
@@ -312,6 +365,28 @@ MarkdownEditorConfig::stringToInplacePreviewSource(const QString &p_str) const {
   } else {
     return InplacePreviewSource::NoInplacePreview;
   }
+}
+
+MarkdownEditorConfig::SectionNumberMode MarkdownEditorConfig::getSectionNumberMode() const {
+  return m_sectionNumberMode;
+}
+
+void MarkdownEditorConfig::setSectionNumberMode(SectionNumberMode p_mode) {
+  updateConfig(m_sectionNumberMode, p_mode, this);
+}
+
+int MarkdownEditorConfig::getSectionNumberBaseLevel() const { return m_sectionNumberBaseLevel; }
+
+void MarkdownEditorConfig::setSectionNumberBaseLevel(int p_level) {
+  updateConfig(m_sectionNumberBaseLevel, p_level, this);
+}
+
+MarkdownEditorConfig::SectionNumberStyle MarkdownEditorConfig::getSectionNumberStyle() const {
+  return m_sectionNumberStyle;
+}
+
+void MarkdownEditorConfig::setSectionNumberStyle(SectionNumberStyle p_style) {
+  updateConfig(m_sectionNumberStyle, p_style, this);
 }
 
 bool MarkdownEditorConfig::getSmartTableEnabled() const { return m_smartTableEnabled; }

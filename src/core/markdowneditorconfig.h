@@ -14,6 +14,15 @@ class IConfigMgr;
 
 class MarkdownEditorConfig : public IConfig {
 public:
+  enum SectionNumberMode { None, Read, Edit };
+
+  enum SectionNumberStyle {
+    // 1.1.
+    DigDotDigDot,
+    // 1.1
+    DigDotDig
+  };
+
   // Mirrors vte::MarkdownEditorConfig::InplacePreviewSource. Kept as a separate enum on
   // purpose: this one is the persisted user setting (see inplacePreviewSourceToString()),
   // so its values are part of VNote's config file contract and must not change if the
@@ -70,6 +79,15 @@ public:
   bool getConfirmBeforeClearObsoleteImages() const;
   void setConfirmBeforeClearObsoleteImages(bool p_confirm);
 
+  SectionNumberMode getSectionNumberMode() const;
+  void setSectionNumberMode(SectionNumberMode p_mode);
+
+  int getSectionNumberBaseLevel() const;
+  void setSectionNumberBaseLevel(int p_level);
+
+  SectionNumberStyle getSectionNumberStyle() const;
+  void setSectionNumberStyle(SectionNumberStyle p_style);
+
   bool getConstrainImageWidthEnabled() const;
   void setConstrainImageWidthEnabled(bool p_enabled);
 
@@ -125,6 +143,12 @@ public:
 private:
   friend class MainConfig;
 
+  QString sectionNumberModeToString(SectionNumberMode p_mode) const;
+  SectionNumberMode stringToSectionNumberMode(const QString &p_str) const;
+
+  QString sectionNumberStyleToString(SectionNumberStyle p_style) const;
+  SectionNumberStyle stringToSectionNumberStyle(const QString &p_str) const;
+
   void loadViewerResource(const QJsonObject &p_jobj);
   QJsonObject saveViewerResource() const;
 
@@ -173,6 +197,15 @@ private:
 
   // Whether ask for user confirmation before clearing obsolete images.
   bool m_confirmBeforeClearObsoleteImages = true;
+
+  // Whether enable section numbering.
+  SectionNumberMode m_sectionNumberMode = SectionNumberMode::None;
+
+  // 1 based.
+  int m_sectionNumberBaseLevel = 2;
+
+  // Section number style.
+  SectionNumberStyle m_sectionNumberStyle = SectionNumberStyle::DigDotDigDot;
 
   // Whether enable image width constraint.
   bool m_constrainImageWidthEnabled = true;

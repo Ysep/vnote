@@ -647,7 +647,7 @@ index cfbcc5fc..d0128e7e 100644
  
    QCheckBox *m_spellCheckCheckBox = nullptr;
 diff --git a/src/widgets/editors/markdowneditor.cpp b/src/widgets/editors/markdowneditor.cpp
-index e1039c07..cbde16a3 100644
+index a90403aa..dbef9c65 100644
 --- a/src/widgets/editors/markdowneditor.cpp
 +++ b/src/widgets/editors/markdowneditor.cpp
 @@ -80,9 +80,10 @@ QPair<QString, QString> getSelectDialogShortcutColors(ServiceLocator &p_services
@@ -680,7 +680,7 @@ index e1039c07..cbde16a3 100644
 @@ -1130,6 +1137,24 @@ int MarkdownEditor::getCurrentHeadingIndex() const {
  }
  
- void MarkdownEditor::updateHeadings(const QVector<vte::md::ElementRegion> &p_headerRegions) {
+ void MarkdownEditor::updateHeadings(const QVector<vte::md::HeadingInfo> &p_headings) {
 +  bool needUpdateSectionNumber = false;
 +  if (isReadOnly()) {
 +    m_sectionNumberEnabled = false;
@@ -702,14 +702,19 @@ index e1039c07..cbde16a3 100644
    m_headingSlugger.reset();
  
    QVector<Heading> headings;
-@@ -1152,13 +1177,18 @@ void MarkdownEditor::updateHeadings(const QVector<vte::md::ElementRegion> &p_hea
-     auto match = vte::MarkdownUtils::matchHeader(block.text());
-     if (match.m_matched) {
-       QString anchor = m_headingSlugger.slug(match.m_header);
--      Heading heading(match.m_header, match.m_level, block.blockNumber(), anchor);
-+      Heading heading(match.m_header, match.m_level, match.m_sequence, block.blockNumber(), anchor);
-       headings.append(heading);
+@@ -1149,11 +1174,23 @@ void MarkdownEditor::updateHeadings(const QVector<vte::md::HeadingInfo> &p_headi
      }
+ 
+     QString anchor = m_headingSlugger.slug(elem.m_anchorText);
+-    headings.append(Heading(elem.m_title, elem.m_level, block.blockNumber(), anchor));
++    // The heading may already carry a section number (e.g. "1.2. Title"); reuse
++    // it so updateSectionNumber() only rewrites headings whose number drifted.
++    QString sectionNumber;
++    auto match = vte::MarkdownUtils::matchHeader(block.text());
++    if (match.m_matched) {
++      sectionNumber = match.m_sequence;
++    }
++    headings.append(Heading(elem.m_title, elem.m_level, sectionNumber, block.blockNumber(), anchor));
    }
  
    OutlineProvider::makePerfectHeadings(headings, m_headings);
@@ -722,7 +727,7 @@ index e1039c07..cbde16a3 100644
    emit headingsChanged();
  
    emit currentHeadingChanged();
-@@ -1542,6 +1572,86 @@ void MarkdownEditor::fetchImagesToLocalAndReplace(QString &p_text) {
+@@ -1537,6 +1574,86 @@ void MarkdownEditor::fetchImagesToLocalAndReplace(QString &p_text) {
    proDlg.setValue(infos.size());
  }
  
@@ -810,7 +815,7 @@ index e1039c07..cbde16a3 100644
    if (m_config.getTextEditorConfig().getZoomDelta() != 0) {
      zoom(m_config.getTextEditorConfig().getZoomDelta());
 diff --git a/src/widgets/editors/markdowneditor.h b/src/widgets/editors/markdowneditor.h
-index 8732c9e0..390f4e43 100644
+index afb6bc89..4ba6cc00 100644
 --- a/src/widgets/editors/markdowneditor.h
 +++ b/src/widgets/editors/markdowneditor.h
 @@ -37,13 +37,16 @@ public:
@@ -847,7 +852,7 @@ index 8732c9e0..390f4e43 100644
  
 +  // Update section number.
    // Update headings outline.
-   void updateHeadings(const QVector<vte::md::ElementRegion> &p_headerRegions);
+   void updateHeadings(const QVector<vte::md::HeadingInfo> &p_headings);
  
 @@ -247,6 +253,9 @@ private:
  
