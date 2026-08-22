@@ -74,7 +74,7 @@ action 内部缓存是**重复且损坏**的第二套缓存。
 的完整实现梳理保存为独立文档，方便后续查阅与提问。
 
 ### 变更
-- 新增 `docs/section_number_feature.md`：
+- 新增 `docs/小节序号功能说明.md`：
   - 背景与功能描述（Follow Configuration / Enabled / Disabled 三项菜单）
   - 核心定义：`OverrideState`（`core/global.h:78`）、
     `MarkdownEditor::overrideSectionNumber`（`markdowneditor.cpp:1648`）
