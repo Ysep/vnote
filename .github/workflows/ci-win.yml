@@ -41,7 +41,10 @@ jobs:
             vs_cmd: "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
             qt: 6.10.3
             qt_modules: "qtwebengine qtwebchannel qtpositioning qtpdf qtimageformats qt5compat"
-            qt_tools: tools_opensslv3_x64
+            # Qt 6 uses Schannel for TLS and needs no bundled OpenSSL; leaving
+            # this empty avoids an extra aqt download and a potential failure
+            # point. Only the Qt 5 entry below ships tools_opensslv3_x64.
+            qt_tools: ""
             qt_major: 6
             suffix: ""
           - name: "Build on Win64 Qt 5.15"
@@ -105,7 +108,13 @@ jobs:
           arch: ${{matrix.config.arch}}
           modules: ${{matrix.config.qt_modules}}
           tools: ${{matrix.config.qt_tools}}
-          cache: 'true'
+          # The action's own cache uses an old @actions/cache implementation
+          # that fails with "Cache service responded with 400" on Windows
+          # runners and then aborts the install (python exit 254). The
+          # dedicated "Cache Qt" step above (actions/cache@v4, path
+          # ${{runner.workspace}}/Qt) already covers caching, so the action's
+          # internal cache is redundant AND broken; disable it.
+          cache: 'false'
 
       - name: Create Build Dir
         shell: bash

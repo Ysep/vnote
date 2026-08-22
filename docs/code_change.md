@@ -36,3 +36,31 @@ hunk 上下文不匹配，CI 的 `git apply --check` 会直接失败。
 - 补丁双向验证通过：
   - 干净 master 源码上 `git apply --check` 成功（临时 worktree）
   - 已应用工作树上 `git apply --reverse --check` 成功
+
+---
+
+## 2026-08-22 修复 Windows CI 安装 Qt 失败（cache service 400 → python 254）
+
+### 现象
+`ci-win.yml` 的 `Install Qt Official Build` 步骤失败：
+- `Warning: Failed to restore: Cache service responded with 400`
+- `Error: ... python.exe failed with exit code 254`
+
+该步骤失败导致 build 目录从未创建，后续诊断步骤
+`Re-run failed tests`（`if: failure()`）在空目录 `D:\a\vnote\build`
+启动 `cmd.EXE` 时报 "The directory name is invalid"（次生误导性错误）。
+
+### 根因
+`jurplel/install-qt-action@v3` 的 `cache: 'true'` 使用旧版
+`@actions/cache` 实现，在 Windows runner 上 restore 时被 GitHub 缓存
+服务拒绝（400），随后直接中止安装（python 254）。
+而工作流第 71-76 行已有独立的 `Cache Qt` 步骤
+（`actions/cache@v4`，缓存 `${{runner.workspace}}/Qt`），
+action 内部缓存是**重复且损坏**的第二套缓存。
+
+### 变更
+- `install-qt-action` 的 `cache: 'true'` → `'false'`：
+  关闭内部缓存，改用工作流自带的 `Cache Qt` 步骤（actions/cache@v4）
+- Qt6 matrix 的 `qt_tools: tools_opensslv3_x64` → `""`：
+  Qt 6 使用 Schannel 做 TLS，不需要捆绑 OpenSSL；
+  减少一次 aqt 下载和一个潜在失败点（Qt5 保留不变）
