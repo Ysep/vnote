@@ -100,6 +100,8 @@ protected:
 
   void handlePrint() Q_DECL_OVERRIDE;
 
+  void handleSectionNumberOverride(OverrideState p_state) Q_DECL_OVERRIDE;
+
   bool aboutToClose(bool p_force) Q_DECL_OVERRIDE;
 
   bool eventFilter(QObject *p_obj, QEvent *p_event) Q_DECL_OVERRIDE;

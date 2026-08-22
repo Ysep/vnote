@@ -393,6 +393,11 @@ protected:
   // Handle print action.
   virtual void handlePrint();
 
+  // Handle the section number override chosen from the toolbar menu.
+  // The default implementation does nothing; markdown subclasses forward it to
+  // the editor.
+  virtual void handleSectionNumberOverride(OverrideState p_state);
+
   // ============ Find and Replace ============
 
   virtual void showFindAndReplaceWidget();

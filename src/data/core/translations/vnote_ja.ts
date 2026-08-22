@@ -3912,6 +3912,36 @@
         <translation>一般</translation>
     </message>
     <message>
+        <location line="+8"/>
+        <source>Section number mode</source>
+        <translation>セクション番号モード</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Base level to start section numbering in edit mode</source>
+        <translation>編集モードでセクション番号付けを開始するベースレベル</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Section number style</source>
+        <translation>セクション番号スタイル</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>1.1.</source>
+        <translation>1.1.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>1.1</source>
+        <translation>1.1</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Section number</source>
+        <translation>セクション番号</translation>
+    </message>
+    <message>
         <location line="+5"/>
         <source>Use web service or local JAR file to render PlantUml graphs</source>
         <translation>Web サービスまたはローカル JAR ファイルを使用して PlantUml 図をレンダリング</translation>
@@ -6372,6 +6402,21 @@ The legacy notebook would be kept for data backup.</source>
         <location line="+8"/>
         <source>Section Number</source>
         <translation>セクション番号</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Follow Configuration</source>
+        <translation>設定に従う</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Enabled</source>
+        <translation>有効</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Disabled</source>
+        <translation>無効</translation>
     </message>
     <message>
         <location line="+11"/>

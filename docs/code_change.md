@@ -92,3 +92,42 @@ fork（如 `Ysep/vnote`）上 GITHUB_TOKEN 默认只读，
 ### 验证
 - YAML 语法校验通过（结构对齐，无缩进破坏）
 - 权限声明为 workflow 级，优先于仓库默认的只读设置
+
+---
+
+## 2026-08-22 移植工具栏 # 小节序号 按钮并修复设置页翻译
+
+### 背景
+- v4.2.0 / v4.1.1 中，打开 md 文档后在编辑器工具栏有
+  `#` 小节序号按钮（下拉：跟随配置 / 启用 / 禁用），
+  可在当前缓冲区强制覆盖小节序号模式。
+- master（重构后的 ViewWindow2 体系）中该按钮丢失：
+  `viewwindowtoolbarhelper2.cpp` 的 34 个 case 无 `SectionNumber`，
+  `overrideSectionNumber` 无调用者。
+- 设置界面 编辑器 -> Markdown编辑器 的 `小节序号` 行显示英文：
+  master 的 `vnote_zh_CN.ts` / `vnote_ja.ts` 缺 `Section number` 等词条
+  （label 为 `markdowneditorpage.cpp` 的 `tr("Section number")`）。
+
+### 变更
+- `viewwindowtoolbarhelper2.h/.cpp`：
+  - 枚举新增 `SectionNumber`
+  - 新增按钮 case：图标 `section_number_editor.svg` + 下拉菜单
+    （Follow Configuration / Enabled / Disabled，data 为 `OverrideState`）
+- `viewwindow2.h/.cpp`：
+  - 新增虚函数 `handleSectionNumberOverride(OverrideState)`（默认空）
+  - `addAction` 的 switch 新增 `SectionNumber` case：菜单 triggered →
+    `handleSectionNumberOverride(state)`
+- `markdownviewwindow2.h/.cpp`：
+  - 工具栏 `TypeTable` 后加入该按钮（与 v4.2.0 位置一致，
+    Tag 之后、InplacePreview 之前）
+  - 实现 `handleSectionNumberOverride` → `m_editor->overrideSectionNumber(state)`
+- 新增图标 `src/data/core/icons/section_number_editor.svg`（# 网格，取自 v4.2.0）
+- `vnote_zh_CN.ts` / `vnote_ja.ts` 补全词条：
+  - 设置页：`Section number`（小节序号）、`Section number mode`、
+    `Base level to start section numbering in edit mode`、`Section number style`、`1.1.`/`1.1`
+  - 工具栏菜单：`Follow Configuration`（跟随配置）、`Enabled`（启用）、`Disabled`（禁用）
+
+### 验证
+- 全量 lint 0 错误
+- `overrideSectionNumber` 为 public（markdowneditor.h:132），
+  `m_editor` 类型 `MarkdownEditor *` 且 view 已 include 头文件

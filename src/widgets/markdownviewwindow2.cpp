@@ -180,6 +180,8 @@ void MarkdownViewWindow2::setupToolBar() {
   addAction(toolBar, ViewWindowToolBarHelper2::TypeImage);
   addAction(toolBar, ViewWindowToolBarHelper2::TypeTable);
 
+  addAction(toolBar, ViewWindowToolBarHelper2::SectionNumber);
+
   addRightCommonToolBarActions(toolBar);
 }
 
@@ -260,6 +262,12 @@ void MarkdownViewWindow2::handlePrint() {
     m_printer->setOutputFormat(QPrinter::PdfFormat);
     m_viewer->print(m_printer.get());
 #endif
+  }
+}
+
+void MarkdownViewWindow2::handleSectionNumberOverride(OverrideState p_state) {
+  if (m_editor) {
+    m_editor->overrideSectionNumber(p_state);
   }
 }
 

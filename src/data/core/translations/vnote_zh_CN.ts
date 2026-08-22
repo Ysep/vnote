@@ -3907,6 +3907,36 @@
         <translation>通用</translation>
     </message>
     <message>
+        <location line="+8"/>
+        <source>Section number mode</source>
+        <translation>小节序号模式</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Base level to start section numbering in edit mode</source>
+        <translation>编辑模式中开始小节序号计数的基础层级</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Section number style</source>
+        <translation>小节序号样式</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>1.1.</source>
+        <translation>1.1.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>1.1</source>
+        <translation>1.1</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Section number</source>
+        <translation>小节序号</translation>
+    </message>
+    <message>
         <location line="+5"/>
         <source>Use web service or local JAR file to render PlantUml graphs</source>
         <translation>使用网络服务或本地 JAR 文件渲染 PlantUml 图</translation>
@@ -6370,6 +6400,21 @@ The legacy notebook would be kept for data backup.</source>
         <location line="+8"/>
         <source>Section Number</source>
         <translation>小节序号</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Follow Configuration</source>
+        <translation>跟随配置</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Enabled</source>
+        <translation>启用</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Disabled</source>
+        <translation>禁用</translation>
     </message>
     <message>
         <location line="+11"/>

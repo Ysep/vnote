@@ -444,6 +444,8 @@ void ViewWindow2::addAdditionalRightToolBarActions(QToolBar *p_toolBar) { Q_UNUS
 
 void ViewWindow2::handlePrint() {}
 
+void ViewWindow2::handleSectionNumberOverride(OverrideState) {}
+
 // Convert a ViewWindowToolBarHelper2::Action (TypeBold..TypeTable) to the
 // corresponding TypeAction ID used by handleTypeAction().
 // Helper TypeBold=6 -> TypeAction TypeBold=10, offset = 4.
@@ -625,6 +627,20 @@ QAction *ViewWindow2::addAction(QToolBar *p_toolBar, ViewWindowToolBarHelper2::A
     connect(this, &ViewWindow2::modeChanged, this,
             [act, this]() { act->setVisible(m_mode == ViewWindowMode::Edit); });
     break;
+
+  case ViewWindowToolBarHelper2::SectionNumber: {
+    // Menu of Follow Configuration / Enabled / Disabled, created by the helper.
+    // Forward the chosen override state to the subclass (markdown editor).
+    auto *toolBtn = dynamic_cast<QToolButton *>(p_toolBar->widgetForAction(act));
+    Q_ASSERT(toolBtn);
+    if (toolBtn && toolBtn->menu()) {
+      connect(toolBtn->menu(), &QMenu::triggered, this, [this](QAction *p_act) {
+        const auto state = static_cast<OverrideState>(p_act->data().toInt());
+        handleSectionNumberOverride(state);
+      });
+    }
+    break;
+  }
 
   case ViewWindowToolBarHelper2::Tag: {
     auto *toolBtn = dynamic_cast<QToolButton *>(p_toolBar->widgetForAction(act));

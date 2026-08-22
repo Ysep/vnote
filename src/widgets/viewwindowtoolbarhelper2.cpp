@@ -1,6 +1,7 @@
 #include "viewwindowtoolbarhelper2.h"
 
 #include <QAction>
+#include <QActionGroup>
 #include <QDebug>
 #include <QMenu>
 #include <QShortcut>
@@ -10,6 +11,7 @@
 
 #include <core/editorconfig.h>
 #include <core/configmgr2.h>
+#include <core/global.h>
 #include <core/servicelocator.h>
 #include <gui/services/themeservice.h>
 #include <gui/utils/widgetutils.h>
@@ -356,6 +358,35 @@ QAction *ViewWindowToolBarHelper2::addAction(QToolBar *p_tb, Action p_action,
     act->setProperty("iconName", QStringLiteral("inplace_preview_editor.svg"));
     act->setCheckable(true);
     break;
+
+  case Action::SectionNumber: {
+    // Menu button letting the user override the section-number mode for this
+    // buffer: follow configuration, force enable, or force disable.
+    act = p_tb->addAction(generateIcon(p_services, QStringLiteral("section_number_editor.svg")),
+                          QObject::tr("Section Number"));
+    act->setProperty("iconName", QStringLiteral("section_number_editor.svg"));
+    auto *toolBtn = dynamic_cast<QToolButton *>(p_tb->widgetForAction(act));
+    Q_ASSERT(toolBtn);
+    toolBtn->setPopupMode(QToolButton::InstantPopup);
+    toolBtn->setProperty(PropertyDefs::c_toolButtonWithoutMenuIndicator, true);
+    auto *menu = new QMenu(toolBtn);
+    auto *actionGroup = new QActionGroup(menu);
+    auto *followAct = actionGroup->addAction(QObject::tr("Follow Configuration"));
+    followAct->setCheckable(true);
+    followAct->setChecked(true);
+    followAct->setData(OverrideState::NoOverride);
+    menu->addAction(followAct);
+    auto *enableAct = actionGroup->addAction(QObject::tr("Enabled"));
+    enableAct->setCheckable(true);
+    enableAct->setData(OverrideState::ForceEnable);
+    menu->addAction(enableAct);
+    auto *disableAct = actionGroup->addAction(QObject::tr("Disabled"));
+    disableAct->setCheckable(true);
+    disableAct->setData(OverrideState::ForceDisable);
+    menu->addAction(disableAct);
+    toolBtn->setMenu(menu);
+    break;
+  }
 
   case Action::Outline: {
     act = p_tb->addAction(generateIcon(p_services, QStringLiteral("outline_editor.svg")),

@@ -57,6 +57,9 @@ public:
     // In-place preview toggle (Edit mode only).
     InplacePreview,
 
+    // Section number override menu button.
+    SectionNumber,
+
     // Outline popup button.
     Outline,
 
