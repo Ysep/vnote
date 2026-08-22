@@ -64,3 +64,31 @@ action 内部缓存是**重复且损坏**的第二套缓存。
 - Qt6 matrix 的 `qt_tools: tools_opensslv3_x64` → `""`：
   Qt 6 使用 Schannel 做 TLS，不需要捆绑 OpenSSL；
   减少一次 aqt 下载和一个潜在失败点（Qt5 保留不变）
+
+---
+
+## 2026-08-22 修复 CI 发布 continuous-build 失败（Update Continuous Build Release exit 1）
+
+### 现象
+`ci-win.yml` / `ci-linux.yml` / `ci-macos.yml` 的
+`Update Continuous Build Release` 步骤报
+`Error: Process completed with exit code 1.`
+
+### 根因
+该步骤用 GITHUB_TOKEN 通过 `gh` 创建/更新 `continuous-build` release 并上传产物，
+但三个 workflow 均无 `permissions` 声明。官方仓库配置了写权限所以能发布；
+fork（如 `Ysep/vnote`）上 GITHUB_TOKEN 默认只读，
+`gh release create` 403 被 `|| true` 吞掉后，
+末尾的 `gh release upload`（无 `|| true`，处于 `set -e` 下）必然失败退出。
+
+### 变更
+- 三个 workflow 顶层新增：
+  ```yaml
+  permissions:
+    contents: write
+  ```
+  显式授予 release/tag 写权限，使 fork 上也能发布 continuous-build。
+
+### 验证
+- YAML 语法校验通过（结构对齐，无缩进破坏）
+- 权限声明为 workflow 级，优先于仓库默认的只读设置

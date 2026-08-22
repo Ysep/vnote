@@ -15,6 +15,13 @@ on:
         required: false
         default: false
 
+# The "Update Continuous Build Release" step creates/updates the
+# continuous-build release and uploads assets with GITHUB_TOKEN. Forks default
+# to read-only token permissions, which makes `gh release upload` fail with
+# exit 1; declare the write scope explicitly so the step works on forks too.
+permissions:
+  contents: write
+
 env:
     VNOTE_VER: 4.5.0
 
