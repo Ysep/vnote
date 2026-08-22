@@ -102,6 +102,8 @@ void ViewWindow2::addAdditionalRightToolBarActions(QToolBar *) {}
 
 void ViewWindow2::handlePrint() {}
 
+void ViewWindow2::handleSectionNumberOverride(OverrideState) {}
+
 void ViewWindow2::showFindAndReplaceWidget() {}
 
 QString ViewWindow2::selectedText() const { return {}; }

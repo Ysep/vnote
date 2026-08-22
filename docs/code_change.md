@@ -153,3 +153,36 @@ fork（如 `Ysep/vnote`）上 GITHUB_TOKEN 默认只读，
 - 全量 lint 0 错误
 - `overrideSectionNumber` 为 public（markdowneditor.h:132），
   `m_editor` 类型 `MarkdownEditor *` 且 view 已 include 头文件
+
+---
+
+## 2026-08-23 修复 CI：Qt6 构建失败（测试链接 undefined reference）
+
+### 背景
+- 用户报告 CI "Build on Win64 Qt6" 报错：
+  `Configure and Build Project` → `ninja: build stopped: subcommand failed`（exit code 1）。
+- 经 GitHub API 确认：64af12f 触发的 4 个 workflow（Linux/Windows/macOS/Gitee Mirror）全部失败；
+  Windows 的 **Qt 6 job 失败、Qt 5.15 job 成功**。
+
+### 根因
+- Qt6 job 构建时开启 `VNOTE_BUILD_TESTS=ON`（Qt5 job 为 OFF），会编译并链接测试。
+- 测试用 **stub 注入模式**（不编译 `viewwindow2.cpp`，在测试 cpp 里手工提供
+  ViewWindow2 所有非纯虚方法的 no-op 定义以满足链接器）。
+- `64af12f8` 在 `viewwindow2.h` 新增非纯虚函数 `handleSectionNumberOverride(OverrideState)`
+  （默认空实现放在 `viewwindow2.cpp`），但 4 个 stub 测试文件未同步补充该定义
+  → 链接时 vtable 引用缺失符号 → undefined reference → ninja 失败。
+- 本地验证 `git apply --check` 确认 CI 的 `restore-section-numbering.patch` 步骤为 skip
+  （master 已含全部功能），与本次失败无关。
+
+### 变更
+- 4 个 stub 测试文件在 `handlePrint() {}` 后补充：
+  `void ViewWindow2::handleSectionNumberOverride(OverrideState) {}`
+  - `tests/widgets/test_snippet_apply.cpp`
+  - `tests/widgets/test_viewsplit2_reload_menu.cpp`
+  - `tests/widgets/test_view_window2_readonly_save_warning.cpp`
+  - `tests/widgets/test_view_window2_readonly_toolbar.cpp`
+  （与 `tests/widgets/CMakeLists.txt` 中列入 `viewwindow2.h` SOURCES 的 4 个测试一一对应）
+
+### 验证
+- 全量 lint 0 错误
+- 本地无 Qt 环境，无法编译；需推送后由 CI 验证
