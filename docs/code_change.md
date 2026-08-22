@@ -67,6 +67,28 @@ action 内部缓存是**重复且损坏**的第二套缓存。
 
 ---
 
+## 2026-08-22 新增小节序号功能说明文档
+
+### 背景
+用户要求将工具栏 `#` 小节序号按钮（提交 `64af12f8` 移植恢复的功能）
+的完整实现梳理保存为独立文档，方便后续查阅与提问。
+
+### 变更
+- 新增 `docs/section_number_feature.md`：
+  - 背景与功能描述（Follow Configuration / Enabled / Disabled 三项菜单）
+  - 核心定义：`OverrideState`（`core/global.h:78`）、
+    `MarkdownEditor::overrideSectionNumber`（`markdowneditor.cpp:1648`）
+  - 完整实现链路 7 个改动点（helper2 枚举/case、viewwindow2 虚函数/接线、
+    markdownviewwindow2 按钮/转发、图标 svg），含可复用代码片段
+  - 翻译词条表（zh_CN / ja 对照，设置页 + 菜单）
+  - 相关提交、验证方式、快速提问模板
+
+### 验证
+- 词条内容与 `vnote_zh_CN.ts` / `vnote_ja.ts` 实际内容核对一致
+- 纯文档变更，无代码改动，无需重新编译
+
+---
+
 ## 2026-08-22 修复 CI 发布 continuous-build 失败（Update Continuous Build Release exit 1）
 
 ### 现象
